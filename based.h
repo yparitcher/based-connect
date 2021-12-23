@@ -43,8 +43,6 @@ enum PromptLanguage {
 	PL_NL = 0x2e,
 	PL_JA = 0x2f,
 	PL_SV = 0x32
-	
-
 };
 
 enum Pairing {

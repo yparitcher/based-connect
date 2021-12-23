@@ -305,6 +305,22 @@ int set_action_button(int sock, enum ActionButton actionbutton) {
 	return abs(actionbutton - got_actionbutton);
 }
 
+int print_bytes(int sock)
+{
+	uint8_t buffer[30] = {0};
+	size_t buffer_n = sizeof(buffer);
+
+	int status = read(sock, buffer, buffer_n);
+	if (status != buffer_n) {
+		return status ? status : 1;
+	}
+	printf("Extra device info bytes:\n");
+	for (int i = 0; i < buffer_n; i++)
+		{printf("0x%02X, ", buffer[i]);}
+	printf("\n");
+	return 0;
+}
+
 int get_device_status(int sock, char name[MAX_NAME_LEN + 1], enum PromptLanguage *language,
 		enum AutoOff *minutes, enum NoiseCancelling *level) {
 	unsigned int device_id;
@@ -352,6 +368,14 @@ int get_device_status(int sock, char name[MAX_NAME_LEN + 1], enum PromptLanguage
 		*level = NC_DNE;
 	}
 
+	status = print_bytes(sock);
+
+	// end of payload, but as the payload is now longer (more options)
+	// we still need to figure out the middle
+	//static const uint8_t ack2[] = { 0x01, 0x01, 0x06, 0x00 };
+	//uint8_t buffer2[sizeof(ack2)];
+	//return read_check(sock, buffer2, sizeof(buffer2), ack2, NULL);
+
 	return status;
 }
 
@@ -371,7 +395,6 @@ int set_self_voice(int sock, enum SelfVoice selfvoice) {
 	ack[5] = selfvoice;
 	return write_check(sock, send, sizeof(send), ack, sizeof(ack));
 }
-
 
 int get_firmware_version(int sock, char version[VER_STR_LEN]) {
 	static const uint8_t send[] = { 0x00, 0x05, 0x01, 0x00 };

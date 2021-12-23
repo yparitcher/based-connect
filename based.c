@@ -273,6 +273,38 @@ int set_noise_cancelling(int sock, enum NoiseCancelling level) {
 	return abs(level - got_level);
 }
 
+int get_action_button(int sock, enum ActionButton *actionbutton) {
+	static uint8_t ack[] = { 0x01, 0x09, 0x03, 0x04, 0x10, 0x04,  ANY, 0x07 };
+	static uint8_t mask[] =  { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0xff };
+	uint8_t buffer[sizeof(ack)];
+
+	int status = read_check(sock, buffer, sizeof(buffer), ack, mask);
+	if (status) {
+		return status;
+	}
+
+	*actionbutton = buffer[6];
+	return 0;
+}
+
+int set_action_button(int sock, enum ActionButton actionbutton) {
+	static uint8_t send[] = { 0x01, 0x09, 0x02, 0x03, 0x10, 0x04, ANY };
+	send[6] = actionbutton;
+
+	int status = write(sock, send, sizeof(send));
+	if (status != sizeof(send)) {
+		return status ? status : 1;
+	}
+
+	enum ActionButton got_actionbutton;
+	status = get_action_button(sock, &got_actionbutton);
+	if (status) {
+		return status;
+	}
+
+	return abs(actionbutton - got_actionbutton);
+}
+
 int get_device_status(int sock, char name[MAX_NAME_LEN + 1], enum PromptLanguage *language,
 		enum AutoOff *minutes, enum NoiseCancelling *level) {
 	unsigned int device_id;

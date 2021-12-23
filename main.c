@@ -56,6 +56,9 @@ static void usage() {
 		"\t-e, --self-voice\n"
 		"\t\tChange the self voice level.\n"
 		"\t\tlevel: high, medium, low, off\n"
+		"\t-z, --action-button\n"
+		"\t\tChange the action button.\n"
+		"\t\taction: unknown, alexa, noisecancelling, google\n"
 		, program_name);
 }
 
@@ -182,6 +185,26 @@ static int do_set_noise_cancelling(int sock, const char *arg) {
 	}
 
 	return set_noise_cancelling(sock, nc);
+}
+
+static int do_set_action_button(int sock, const char *arg) {
+	enum ActionButton ab;
+
+	if (strcmp(arg, "unknown") == 0) {
+		ab = AB_UNKNOWN;
+	} else if (strcmp(arg, "alexa") == 0) {
+		ab = AB_ALEXA;
+	} else if (strcmp(arg, "noisecancelling") == 0) {
+		ab = AB_NOISECANCELLING;
+	} else if (strcmp(arg, "google") == 0) {
+		ab = AB_GOOGLE;
+	} else {
+		fprintf(stderr, "Invalid action button argument: %s\n", arg);
+		usage();
+		return 1;
+	}
+
+	return set_action_button(sock, ab);
 }
 
 static int do_get_device_status(int sock) {
@@ -454,7 +477,7 @@ static int do_send_packet(int sock, const char *arg) {
 }
 
 int main(int argc, char *argv[]) {
-	static const char *short_opt = "hn:l:v:o:c:e:dp:fsba";
+	static const char *short_opt = "hn:l:v:o:c:e:z:dp:fsba";
 	static const struct option long_opt[] = {
 		{ "help", no_argument, NULL, 'h' },
 		{ "name", required_argument, NULL, 'n' },
@@ -473,6 +496,7 @@ int main(int argc, char *argv[]) {
 		{ "remove-device", required_argument, NULL, 4 },
 		{ "device-id", no_argument, NULL, 5 },
 		{ "self-voice", required_argument, NULL, 'e' },
+		{ "action-button", required_argument, NULL, 'z' },
 		{ "send-packet", required_argument, NULL, 1 },
 		{ 0, 0, 0, 0 }
 	};
@@ -575,6 +599,9 @@ int main(int argc, char *argv[]) {
 				break;
 			case 'e':
 				status = do_set_self_voice(sock, optarg);
+				break;
+			case 'z':
+				status = do_set_action_button(sock, optarg);
 				break;
 			case 2:
 				status = do_connect_device(sock, optarg);

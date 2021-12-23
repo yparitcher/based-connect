@@ -70,6 +70,13 @@ enum SelfVoice {
 	SV_LOW = 0x3,
 };
 
+enum ActionButton {
+	AB_UNKNOWN = 0x0, //???
+	AB_ALEXA = 0x1,
+	AB_NOISECANCELLING = 0x2,
+	AB_GOOGLE = 0x3, //???
+};
+
 struct Device {
 	bdaddr_t address;
 	enum DeviceStatus status;
@@ -85,6 +92,7 @@ int set_prompt_language(int sock, enum PromptLanguage language);
 int set_voice_prompts(int sock, int on);
 int set_auto_off(int sock, enum AutoOff minutes);
 int set_noise_cancelling(int sock, enum NoiseCancelling level);
+int set_action_button(int sock, enum ActionButton actionbutton);
 int get_device_status(int sock, char name[MAX_NAME_LEN + 1], enum PromptLanguage *language,
 		enum AutoOff *minutes, enum NoiseCancelling *level);
 int set_pairing(int sock, enum Pairing pairing);

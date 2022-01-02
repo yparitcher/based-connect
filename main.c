@@ -190,8 +190,8 @@ static int do_set_noise_cancelling(int sock, const char *arg) {
 static int do_set_action_button(int sock, const char *arg) {
 	enum ActionButton ab;
 
-	if (strcmp(arg, "unknown") == 0) {
-		ab = AB_UNKNOWN;
+	if (strcmp(arg, "default") == 0) {
+		ab = AB_DEFAULT;
 	} else if (strcmp(arg, "alexa") == 0) {
 		ab = AB_ALEXA;
 	} else if (strcmp(arg, "noisecancelling") == 0) {
@@ -212,8 +212,10 @@ static int do_get_device_status(int sock) {
 	enum PromptLanguage pl;
 	enum AutoOff ao;
 	enum NoiseCancelling nc;
+	enum ActionButton ab;
+	enum SelfVoice sv;
 
-	int status = get_device_status(sock, name, &pl, &ao, &nc);
+	int status = get_device_status(sock, name, &pl, &ao, &nc, &ab, &sv);
 	if (status) {
 		return status;
 	}
@@ -292,6 +294,38 @@ static int do_get_device_status(int sock) {
 		}
 		printf("Noise Cancelling: %s\n", print);
 	}
+
+	switch (ab){
+		case AB_GOOGLE:
+			print = "google";
+			break;
+		case AB_ALEXA:
+			print = "alexa";
+			break;
+		case AB_NOISECANCELLING:
+			print = "noisecancelling";
+			break;
+		case AB_DEFAULT:
+			print = "default";
+			break;
+	}
+	printf("Action Button: %s\n", print);
+
+	switch (sv){
+		case SV_HIGH:
+			print = "high";
+			break;
+		case SV_MEDIUM:
+			print = "medium";
+			break;
+		case SV_LOW:
+			print = "low";
+			break;
+		case SV_OFF:
+			print = "off";
+			break;
+	}
+	printf("Self Voice: %s\n", print);
 
 	return 0;
 }

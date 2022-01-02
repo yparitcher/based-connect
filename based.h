@@ -69,7 +69,7 @@ enum SelfVoice {
 };
 
 enum ActionButton {
-	AB_UNKNOWN = 0x0, //???
+	AB_DEFAULT = 0x0,
 	AB_ALEXA = 0x1,
 	AB_NOISECANCELLING = 0x2,
 	AB_GOOGLE = 0x3, //???
@@ -90,10 +90,13 @@ int set_prompt_language(int sock, enum PromptLanguage language);
 int set_voice_prompts(int sock, int on);
 int set_auto_off(int sock, enum AutoOff minutes);
 int set_noise_cancelling(int sock, enum NoiseCancelling level);
+int get_action_button(int sock, enum ActionButton *actionbutton);
 int set_action_button(int sock, enum ActionButton actionbutton);
 int get_device_status(int sock, char name[MAX_NAME_LEN + 1], enum PromptLanguage *language,
-		enum AutoOff *minutes, enum NoiseCancelling *level);
+		enum AutoOff *minutes, enum NoiseCancelling *level,
+		enum ActionButton *actionbutton, enum SelfVoice *selfvoice);
 int set_pairing(int sock, enum Pairing pairing);
+int get_self_voice(int sock, enum SelfVoice *selfVoice);
 int set_self_voice(int sock, enum SelfVoice selfVoice);
 int get_firmware_version(int sock, char version[VER_STR_LEN]);
 int get_serial_number(int sock, char serial[0x100]);
